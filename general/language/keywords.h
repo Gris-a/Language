@@ -1,0 +1,6 @@
+KEYWORD(FUNC , "func"  )
+KEYWORD(IF   , "if"    )
+KEYWORD(ELSE , "else"  )
+KEYWORD(FOR  , "for"   )
+KEYWORD(WHILE, "while" )
+KEYWORD(RET  , "return")

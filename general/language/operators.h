@@ -1,0 +1,27 @@
+OPERATOR(ADD, "+")
+
+OPERATOR(SUB, "-")
+
+OPERATOR(MUL, "*")
+
+OPERATOR(DIV, "/")
+
+OPERATOR(POW, "^")
+
+OPERATOR(LESS, "<")
+
+OPERATOR(ABOVE, ">")
+
+OPERATOR(LESSEQ, "<=")
+
+OPERATOR(ABOVEEQ, ">=")
+
+OPERATOR(EQ, "==")
+
+OPERATOR(SEP, ";")
+
+OPERATOR(ASS, "=")
+
+OPERATOR(AND, "and")
+
+OPERATOR(OR, "or")
