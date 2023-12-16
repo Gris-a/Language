@@ -30,15 +30,6 @@ int TreeDtor(Tree *tree, Node **root)
 
     SubTreeDtor(*root);
 
-    if((*root) == tree->root)
-    {
-        NamesTableDtor(tree->lang);
-        tree->lang = NULL;
-
-        NamesTableDtor(tree->global);
-        tree->global = NULL;
-    }
-
     (*root) = NULL;
 
     return EXIT_SUCCESS;
@@ -62,11 +53,14 @@ int NodeDtor(Node *node)
 {
     ASSERT(node, return EXIT_FAILURE);
 
+    if(node->type == NodeType::WORD)
+        free(node->data.word);
     free(node);
 
     return EXIT_SUCCESS;
 }
 
+#define SPECIAL_CH(enum, ch) case SpecialChar::enum: {fprintf(file, "\\%c", ch); break;}
 static void NodeDataPrint(Node *node, FILE *file)
 {
     switch(node->type)
@@ -78,17 +72,23 @@ static void NodeDataPrint(Node *node, FILE *file)
         }
         case NodeType::NAME:
         {
-            fprintf(file, "%s", node->data.name->ident);
+            fprintf(file, "\\%s", node->data.name->ident);
             return;
         }
-        case NodeType::TMP:
+        case NodeType::WORD:
         {
-            fprintf(file, "\'%c\'", node->data.tmp);
+            fprintf(file, "\\%s", node->data.word);
             return;
         }
-        case NodeType::TABLE:
+        case NodeType::SP_CH:
         {
-            fprintf(file, "Names table");
+            switch(GetSpecialChar(node))
+            {
+                #include "../../../general/language/special_ch.h"
+                default:
+                    fprintf(file, "<<<What the fuck is this?>>>");
+            }
+
             return;
         }
         default:
@@ -123,8 +123,6 @@ void TreeLog(Tree *tree, FILE *file)
     if(!tree->root) return;
 
     SubTreeLog(tree->root, file);
-    NamesTableDump(tree->lang);
-    NamesTableDump(tree->global);
 
     LOG_END;
 }
@@ -150,12 +148,12 @@ static void DotNodeCtor(Node *const node, FILE *dot_file)
             fprintf(dot_file , "\"bisque\"];");
             break;
         }
-        case NodeType::TABLE:
+        case NodeType::SP_CH:
         {
             fprintf(dot_file, "\"green\"];");
             break;
         }
-        case NodeType::TMP: //fall through
+        case NodeType::WORD: //fall through
         default:
         {
             fprintf(dot_file , "\"red\"];");
@@ -241,9 +239,7 @@ void TreeDump(Tree *tree, const char *func, const int line)
 //TODO upgrade
 bool IsTreeValid(Tree *tree)
 {
-    ASSERT(tree && tree->root             , return false);
-    ASSERT(IsNamesTableValid(tree->lang)  , return false);
-    ASSERT(IsNamesTableValid(tree->global), return false);
+    ASSERT(tree && tree->root, return false);
 
     return true;
 }

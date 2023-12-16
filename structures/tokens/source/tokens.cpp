@@ -7,7 +7,7 @@ Tokens TokensCtor(void)
     Tokens tokens = {};
 
     tokens.data  = (Token *)calloc(1, sizeof(Token));
-    *tokens.data = {.lexeme = NodeCtor({.tmp = '\0'}, NodeType::TMP)};
+    *tokens.data = {.lexeme = NodeCtor({.sp_ch = SpecialChar::END}, NodeType::SP_CH)};
 
     tokens.data->prev = tokens.data;
     tokens.data->next = tokens.data;
@@ -38,14 +38,14 @@ void TokensClear(Tokens *tokens)
 
     for(Token *pos = FirstToken(tokens); pos != tokens->data; pos = pos->next)
     {
-        if(pos->prev->lexeme->type == NodeType::TMP)
+        if(IsSpecialChar(pos->prev->lexeme) && !(GetSpecialChar(pos->prev->lexeme) == SpecialChar::SEMICOLON))
         {
             NodeDtor(pos->prev->lexeme);
         }
         free(pos->prev);
     }
 
-    if(head->lexeme->type == NodeType::TMP)
+    if(IsSpecialChar(head->lexeme) && !(GetSpecialChar(head->lexeme) == SpecialChar::SEMICOLON))
     {
         NodeDtor(head->lexeme);
     }

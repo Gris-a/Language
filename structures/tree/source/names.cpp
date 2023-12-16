@@ -19,7 +19,35 @@ Name *SearchName(NamesTable *table, const char *ident)
     return NULL;
 }
 
-Name *AddName(NamesTable *table, const char *ident, NameType type, name_t name)
+Name *SearchNameTyped(NamesTable *table, const char *ident, NameType type)
+{
+    NAMES_TABLE_VERIFICATION(table, NULL);
+    ASSERT(ident, return NULL);
+
+    for(size_t i = 0; i < table->size; i++)
+    {
+        if((strcmp(table->names[i].ident, ident) == 0) && (table->names[i].type == type))
+        {
+            return table->names + i;
+        }
+    }
+
+    return NULL;
+}
+
+Name *WordToName(NamesTable *table, Node *node, NameType type, name_t name_data)
+{
+    char *node_name = GetWord(node);
+    Name *name = AddName(table, node_name, type, name_data);
+    free(node_name);
+
+    node->type = NodeType::NAME;
+    node->data = {.name = name};
+
+    return name;
+}
+
+Name *AddName(NamesTable *table, const char *ident, NameType type, name_t name_data)
 {
     if(table->size == table->capacity)
     {
@@ -28,7 +56,7 @@ Name *AddName(NamesTable *table, const char *ident, NameType type, name_t name)
 
     table->names[table->size] = {.ident = strdup(ident),
                                  .type  = type,
-                                 .value = name};
+                                 .val   = name_data};
 
     return table->names + (table->size++);
 }
@@ -93,10 +121,10 @@ void NamesTableDump(NamesTable *table)
         LOG("\t\t[%s]", table->names[i].ident);
         switch(table->names[i].type)
         {
-            case NameType::KWORD: LOG(" - kword;\n"); break;
-            case NameType::OP:    LOG(" - op;\n"); break;
-            case NameType::FUNC:  LOG(" - func;\n"); break;
-            case NameType::VAR:   LOG(" = %lg;\n", table->names[i].value.var_val); break;
+            case NameType::KWORD: LOG(" - kword;   \n"); break;
+            case NameType::OP:    LOG(" - op;      \n"); break;
+            case NameType::FUNC:  LOG(" - func;    \n"); break;
+            case NameType::VAR:   LOG(" - variable;\n"); break;
             default:              LOG(" - What the fuck is this?\n");
         }
     }

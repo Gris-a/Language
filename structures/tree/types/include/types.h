@@ -30,22 +30,29 @@ enum class Operator
 };
 #undef OPERATOR
 
+#define SPECIAL_CH(enum, ...) enum,
+enum class SpecialChar
+{
+    #include "../../../../general/language/special_ch.h"
+};
+#undef SPECIAL_CH
+
 ///TREE///
 
 enum class NodeType
 {
-    TMP   = 0,
+    SP_CH = 0,
     NUM   = 1,
     NAME  = 2,
-    TABLE = 3
+    WORD  = 3
 };
 
 union node_t
 {
-    char          tmp;
-    double        num;
+    char        *word;
     Name        *name;
-    NamesTable *table;
+    double        num;
+    SpecialChar sp_ch;
 };
 
 struct Node
@@ -59,9 +66,7 @@ struct Node
 
 struct Tree
 {
-    Node         *root;
-    NamesTable   *lang;
-    NamesTable *global;
+    Node *root;
 };
 
 ///VARIABLES TABLE///
@@ -76,17 +81,17 @@ enum class NameType
 
 union name_t
 {
-    Keyword      kword;
-    Operator        op;
-    size_t func_n_args;
-    double     var_val;
+    Keyword   kword;
+    Operator     op;
+    size_t   n_args;
+    double  var_val;
 };
 
 struct Name
 {
     char   *ident;
     NameType type;
-    name_t  value;
+    name_t    val;
 };
 
 struct NamesTable
@@ -101,11 +106,11 @@ struct NamesTable
 
 bool IsNumber(Node *node);
 
-bool IsTemporary(Node *node);
-
-bool IsTable(Node *node);
+bool IsSpecialChar(Node *node);
 
 bool IsKeyword(Node *node);
+
+bool IsWord(Node *node);
 
 bool IsOperator(Node *node);
 
@@ -115,19 +120,19 @@ bool IsFunction(Node *node);
 
 ///NODE DATA GETTERS
 
-char GetTemporary(Node *node);
+SpecialChar GetSpecialChar(Node *node);
 
 double GetNumber(Node *node);
-
-NamesTable *GetTable(Node *node);
 
 Keyword GetKeyword(Node *node);
 
 Operator GetOperator(Node *node);
 
+char *GetWord(Node *node);
+
 double GetVariableValue(Node *node);
 
-size_t GetFunctionNArgs(Node *node);
+size_t GetNArgs(Node *node);
 
 char *GetIdentificator(Node *node);
 

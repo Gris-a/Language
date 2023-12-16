@@ -7,14 +7,14 @@ bool IsNumber(Node *node)
     return (node->type == NodeType::NUM);
 }
 
-bool IsTemporary(Node *node)
+bool IsSpecialChar(Node *node)
 {
-    return (node->type == NodeType::TMP);
+    return (node->type == NodeType::SP_CH);
 }
 
-bool IsTable(Node *node)
+bool IsWord(Node *node)
 {
-    return (node->type == NodeType::TABLE);
+    return (node->type == NodeType::WORD);
 }
 
 bool IsKeyword(Node *node)
@@ -46,39 +46,40 @@ bool IsVariable(Node *node)
 
 
 
-char GetTemporary(Node *node)
-{
-    return node->data.tmp;
-}
-
-NamesTable *GetTable(Node *node)
-{
-    return node->data.table;
-}
 
 double GetNumber(Node *node)
 {
     return node->data.num;
 }
 
+SpecialChar GetSpecialChar(Node *node)
+{
+    return node->data.sp_ch;
+}
+
+char *GetWord(Node *node)
+{
+    return node->data.word;
+}
+
 Keyword GetKeyword(Node *node)
 {
-    return node->data.name->value.kword;
+    return node->data.name->val.kword;
 }
 
 Operator GetOperator(Node *node)
 {
-    return node->data.name->value.op;
+    return node->data.name->val.op;
 }
 
-size_t GetFunctionNArgs(Node *node)
+size_t GetNArgs(Node *node)
 {
-    return node->data.name->value.func_n_args;
+    return node->data.name->val.n_args;
 }
 
 double GetVariableValue(Node *node)
 {
-    return node->data.name->value.var_val;
+    return node->data.name->val.var_val;
 }
 
 char *GetIdentificator(Node *node)

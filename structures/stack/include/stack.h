@@ -21,4 +21,6 @@ void PushStack(Stack *stack, stack_t val);
 
 stack_t PopStack(Stack *stack);
 
+stack_t GetStackTop(Stack *stack);
+
 #endif //STACK_H

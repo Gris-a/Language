@@ -54,33 +54,19 @@ static int TextPreprocessing(Buffer *buf)
 {
     buf->n_lines = 0;
 
-    if(*buf->buf == '\0')
+    if(buf->buf[0] == '\0')
         return EXIT_FAILURE;
 
-    char *read_p  = buf->buf + 1;
-    char *write_p = buf->buf + 1;
-
-    if(isspace(buf->buf[0])) write_p--;
+    char *read_p = buf->buf;
 
     for(; *read_p != '\0'; read_p++)
     {
         if(*read_p == '\n')
-        {
-            if(*(read_p - 1) == '\n')
-                continue;
-
             buf->n_lines++;
-        }
-
-        *(write_p++) = *read_p;
     }
-    *write_p = '\0';
 
     if(read_p[-1] != '\n')
         buf->n_lines++;
-
-    buf->size = (size_t)(write_p - buf->buf + 1);
-    buf->buf  = (char *)realloc(buf->buf, buf->size);
 
     return EXIT_SUCCESS;
 }
@@ -92,13 +78,13 @@ static void TextDelim(Text *text, Buffer *buf)
     text->lines[0] = buf_p;
     size_t line_count = 1;
 
-    for(; *buf_p != '\0'; buf_p++)
+    for(size_t i = 0; i < buf->size; i++)
     {
-        if(*buf_p == '\n' && *(buf_p + 1) != '\0')
+        if(buf_p[i] == '\n' && buf_p[i + 1] != '\0')
         {
-            *(buf_p++) = '\0';
+            buf_p[i] = '\0';
 
-            text->lines[line_count++] = buf_p;
+            text->lines[line_count++] = buf_p + i + 1;
         }
     }
 }

@@ -15,7 +15,7 @@ Stack StackCtor(size_t capacity)
 
     stack.capacity = capacity;
     stack.size     = 0;
-    stack.data     = (stack_t *)calloc(capacity * sizeof(stack_t), sizeof(char));
+    stack.data     = (stack_t *)calloc(capacity, sizeof(stack_t));
 
     return stack;
 }
@@ -67,4 +67,12 @@ stack_t PopStack(Stack *stack)
     StackShrink(stack);
 
     return ret_val;
+}
+
+stack_t GetStackTop(Stack *stack)
+{
+    if(stack->size == 0)
+        return NULL;
+    else
+        return stack->data[stack->size - 1];
 }

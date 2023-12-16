@@ -18,10 +18,10 @@ OPERATOR(ABOVEEQ, ">=")
 
 OPERATOR(EQ, "==")
 
-OPERATOR(SEP, ";")
+OPERATOR(NOTEQ, "!=")
 
 OPERATOR(ASS, "=")
 
-OPERATOR(AND, "and")
+OPERATOR(AND, "&&")
 
-OPERATOR(OR, "or")
+OPERATOR(OR, "||")

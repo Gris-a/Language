@@ -22,7 +22,11 @@ const size_t INIT_TABLE_CAPACITY = 100;
 
 Name *SearchName(NamesTable *table, const char *ident);
 
-Name *AddName(NamesTable *table, const char *ident, NameType type, name_t value);
+Name *SearchNameTyped(NamesTable *table, const char *ident, NameType type);
+
+Name *WordToName(NamesTable *table, Node *node, NameType type, name_t name_data);
+
+Name *AddName(NamesTable *table, const char *ident, NameType type, name_t name_data);
 
 NamesTable *NamesTableCtorLang(void);
 
