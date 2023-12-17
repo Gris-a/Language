@@ -1,0 +1,2 @@
+BUILTIN_FUNC("in" , 0)
+BUILTIN_FUNC("out", 1)
