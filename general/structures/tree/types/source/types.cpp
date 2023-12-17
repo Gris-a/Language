@@ -19,26 +19,22 @@ bool IsWord(Node *node)
 
 bool IsKeyword(Node *node)
 {
-    return ((node->type            == NodeType::NAME) &&
-            (node->data.name->type == NameType::KWORD));
+    return (node->type == NodeType::KWORD);
 }
 
 bool IsOperator(Node *node)
 {
-    return ((node->type            == NodeType::NAME) &&
-            (node->data.name->type == NameType::OP));
+    return (node->type == NodeType::OP);
 }
 
 bool IsFunction(Node *node)
 {
-    return ((node->type            == NodeType::NAME) &&
-            (node->data.name->type == NameType::FUNC));
+    return (node->type == NodeType::FUNC);
 }
 
 bool IsVariable(Node *node)
 {
-    return ((node->type            == NodeType::NAME) &&
-            (node->data.name->type == NameType::VAR));
+    return (node->type == NodeType::VAR);
 }
 
 
@@ -64,25 +60,20 @@ char *GetWord(Node *node)
 
 Keyword GetKeyword(Node *node)
 {
-    return node->data.name->val.kword;
+    return node->data.kword;
 }
 
 Operator GetOperator(Node *node)
 {
-    return node->data.name->val.op;
+    return node->data.op;
 }
 
-size_t GetNArgs(Node *node)
+char *GetFunction(Node *node)
 {
-    return node->data.name->val.n_args;
+    return node->data.func;
 }
 
-double GetVariableValue(Node *node)
+size_t GetVariable(Node *node)
 {
-    return node->data.name->val.var_val;
-}
-
-char *GetIdentificator(Node *node)
-{
-    return node->data.name->ident;
+    return node->data.var_id;
 }

@@ -1,3 +1,5 @@
+a = 4;
+
 func factorial(a)
 {
     if(a == 1)
@@ -7,6 +9,8 @@ func factorial(a)
 
     return factorial(a - 1) * a;
 }
+
+b = 3 - a;
 
 func main()
 {

@@ -35,18 +35,6 @@ Name *SearchNameTyped(NamesTable *table, const char *ident, NameType type)
     return NULL;
 }
 
-Name *WordToName(NamesTable *table, Node *node, NameType type, name_t name_data)
-{
-    char *node_name = GetWord(node);
-    Name *name = AddName(table, node_name, type, name_data);
-    free(node_name);
-
-    node->type = NodeType::NAME;
-    node->data = {.name = name};
-
-    return name;
-}
-
 Name *AddName(NamesTable *table, const char *ident, NameType type, name_t name_data)
 {
     if(table->size == table->capacity)

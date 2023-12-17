@@ -7,7 +7,6 @@
 struct Node;
 struct Tree;
 
-struct Function;
 struct Name;
 struct NamesTable;
 
@@ -43,16 +42,22 @@ enum class NodeType
 {
     SP_CH = 0,
     NUM   = 1,
-    NAME  = 2,
-    WORD  = 3
+    VAR   = 2,
+    KWORD = 3,
+    OP    = 4,
+    FUNC  = 5,
+    WORD  = 6
 };
 
 union node_t
 {
-    char        *word;
-    Name        *name;
-    double        num;
     SpecialChar sp_ch;
+    double        num;
+    size_t     var_id;
+    Keyword     kword;
+    Operator       op;
+    char        *func;
+    char        *word;
 };
 
 struct Node
@@ -81,10 +86,10 @@ enum class NameType
 
 union name_t
 {
-    Keyword   kword;
-    Operator     op;
-    size_t   n_args;
-    double  var_val;
+    Keyword kword;
+    Operator   op;
+    size_t n_args;
+    size_t var_id;
 };
 
 struct Name
@@ -130,10 +135,8 @@ Operator GetOperator(Node *node);
 
 char *GetWord(Node *node);
 
-double GetVariableValue(Node *node);
+size_t GetVariable(Node *node);
 
-size_t GetNArgs(Node *node);
-
-char *GetIdentificator(Node *node);
+char *GetFunction(Node *node);
 
 #endif //TYPES_H

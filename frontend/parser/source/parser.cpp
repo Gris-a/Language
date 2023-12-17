@@ -8,7 +8,8 @@
 static NamesTable *LANG = NamesTableCtorLang();
 
 static NamesTable *TABLE_OF_TABLES[100] = {LANG};
-static size_t TABLE_POS = 1;
+static size_t TABLE_POS   = 1;
+static size_t VARIABLE_ID = 0;
 
 void ClearTables(void)
 {
@@ -189,7 +190,10 @@ static Tokens Tokenizator(Text *code)
 
                         if(name)
                         {
-                            AddToken(&tokens, {.name = name}, NodeType::NAME, line, old_pos);
+                            if(name->type == NameType::KWORD)
+                                AddToken(&tokens, {.kword = name->val.kword}, NodeType::KWORD, line, old_pos);
+                            else if(name->type == NameType::OP)
+                                AddToken(&tokens, {.op = name->val.op}, NodeType::OP, line, old_pos);
                         }
                         else
                         {
@@ -296,15 +300,18 @@ static Node *ParseFunction(Stack *nt_stack, Token **token, bool *is_syn_err)
     char *func_name = GetWord(func);
     SYN_ASSERT(SearchNameTyped(global, func_name, NameType::FUNC) == NULL);
 
-    WordToName(global, func, NameType::FUNC, {.n_args = 0});
+    Name *name = AddName(global, func_name, NameType::FUNC, {.n_args = 0});
+    func->type = NodeType::FUNC;
+    func->data = {.func = func_name};
 
     NamesTable *local = NamesTableCtor();
     PushStack(nt_stack, local);
 
     TABLE_OF_TABLES[TABLE_POS++] = local;
 
-    Node *args = ParseFuncArgs(local, token, is_syn_err, &func->data.name->val.n_args);
+    Node *args = ParseFuncArgs(local, token, is_syn_err, &name->val.n_args);
     if(*is_syn_err) return NULL;
+
 
     Node *body = ParseBody(nt_stack, token, is_syn_err);
     SYN_ASSERT(body);
@@ -344,7 +351,13 @@ static Node *ParseFuncArgs(NamesTable *local, Token **token, bool *is_syn_err, s
             SYN_ASSERT(IsWord((*next)->left));
 
         (*n_args)++;
-        WordToName(local, (*next)->left, NameType::VAR, {.var_val = 0});
+
+        char *var_name = GetWord((*next)->left);
+        AddName(local, var_name, NameType::VAR, {.var_id = VARIABLE_ID});
+        free(var_name);
+
+        (*next)->left->type = NodeType::VAR;
+        (*next)->left->data = {.var_id = (VARIABLE_ID++)};
 
         next = &(*next)->right;
         TOKEN_NEXT;
@@ -497,17 +510,20 @@ static Node *ParseAssignment(Stack *nt_stack, Token **token, bool *is_syn_err)
     char *var_name = GetWord(variable);
     Name *name     = SearchNameStackTyped(nt_stack, var_name, NameType::VAR);
 
+    variable->type = NodeType::VAR;
     if(!name)
     {
-        NamesTable *names_space = (NamesTable *)GetStackTop(nt_stack);
-        WordToName(names_space, variable, NameType::VAR, {.var_val = 0});
+        NamesTable *name_space = (NamesTable *)GetStackTop(nt_stack);
+
+        AddName(name_space, var_name, NameType::VAR, {.var_id = VARIABLE_ID});
+
+        variable->data = {.var_id = (VARIABLE_ID++)};
     }
     else
     {
-        variable->type = NodeType::NAME;
-        variable->data = {.name = name};
-        free(var_name);
+        variable->data = {.var_id = name->val.var_id};
     }
+    free(var_name);
 
     sep->left  = ass;
     ass->left  = variable;
@@ -705,7 +721,10 @@ static Node *ParseExprPrimary(Stack *nt_stack, Token **token, bool *is_syn_err)
             ret_val = ParseExprBrackets(nt_stack, token, is_syn_err);
             break;
         }
-        case NodeType::NAME:
+        case NodeType::FUNC:
+        case NodeType::KWORD:
+        case NodeType::OP:
+        case NodeType::VAR:
         default: return NULL;
     }
 
@@ -741,9 +760,8 @@ static Node *ParseExprFuncCall(Stack *nt_stack, Token **token, bool *is_syn_err)
     Name *name = SearchNameStackTyped(nt_stack, func_name, NameType::FUNC);
     SYN_ASSERT(name);
 
-    func->type = NodeType::NAME;
-    func->data = {.name = name};
-    free(func_name);
+    func->type = NodeType::FUNC;
+    func->data = {.func = func_name};
 
     InsertToken(*token, {.sp_ch = SpecialChar::COMMA}, NodeType::SP_CH, (*token)->line, (*token)->pos);
     TOKEN_NEXT;
@@ -764,13 +782,13 @@ static Node *ParseExprFuncCall(Stack *nt_stack, Token **token, bool *is_syn_err)
             SYN_ASSERT((*next)->left);
 
         (n_args)++;
-        SYN_ASSERT(n_args <= GetNArgs(func));
+        SYN_ASSERT(n_args <= name->val.n_args);
 
         next = &(*next)->right;
     }
     while(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::COMMA));
 
-    SYN_ASSERT(n_args == GetNArgs(func));
+    SYN_ASSERT(n_args == name->val.n_args);
     SYN_ASSERT(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::BRACKET_RIGHT));
     TOKEN_NEXT;
 
@@ -788,8 +806,8 @@ static Node *ParseExprVariable(Stack *nt_stack, Token **token, bool *is_syn_err)
     Name *name = SearchNameStackTyped(nt_stack, var_name, NameType::VAR);
     if(!name) return NULL;
 
-    variable->type = NodeType::NAME;
-    variable->data = {.name = name};
+    variable->type = NodeType::VAR;
+    variable->data = {.var_id = name->val.var_id};
     free(var_name);
 
     return variable;

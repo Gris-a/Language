@@ -53,26 +53,65 @@ int NodeDtor(Node *node)
 {
     ASSERT(node, return EXIT_FAILURE);
 
-    if(node->type == NodeType::WORD)
-        free(node->data.word);
+    switch(node->type)
+    {
+        case NodeType::FUNC:
+        {
+            free(node->data.func);
+            break;
+        }
+        case NodeType::WORD:
+        {
+            free(node->data.word);
+            break;
+        }
+    }
+
     free(node);
 
     return EXIT_SUCCESS;
 }
 
 #define SPECIAL_CH(enum, ch) case SpecialChar::enum: {fprintf(file, "\\%c", ch); break;}
+#define KEYWORD(enum, kword) case Keyword::enum: {fprintf(file, "%s", kword); break;}
+#define OPERATOR(enum, op) case Operator::enum: {fprintf(file, "\\%s", op); break;}
 static void NodeDataPrint(Node *node, FILE *file)
 {
     switch(node->type)
     {
         case NodeType::NUM:
         {
-            fprintf(file, "%lg", node->data.num);
+            fprintf(file, "\\%lg", node->data.num);
             return;
         }
-        case NodeType::NAME:
+        case NodeType::FUNC:
         {
-            fprintf(file, "\\%s", node->data.name->ident);
+            fprintf(file, "\\%s", node->data.func);
+            return;
+        }
+        case NodeType::KWORD:
+        {
+            switch(GetKeyword(node))
+            {
+                #include "../../../language/keywords.h"
+                default:
+                    fprintf(file, "<<<What the fuck is this?>>>");
+            }
+            return;
+        }
+        case NodeType::OP:
+        {
+            switch(GetOperator(node))
+            {
+                #include "../../../language/operators.h"
+                default:
+                    fprintf(file, "<<<What the fuck is this?>>>");
+            }
+            return;
+        }
+        case NodeType::VAR:
+        {
+            fprintf(file, "%zu", node->data.var_id);
             return;
         }
         case NodeType::WORD:
@@ -88,7 +127,6 @@ static void NodeDataPrint(Node *node, FILE *file)
                 default:
                     fprintf(file, "<<<What the fuck is this?>>>");
             }
-
             return;
         }
         default:
@@ -98,6 +136,9 @@ static void NodeDataPrint(Node *node, FILE *file)
         }
     }
 }
+#undef SPECIAL_CH
+#undef KEYWORD
+#undef OPERATOR
 
 static void SubTreeLog(Node *node, FILE *file, int n_tabs)
 {
@@ -143,9 +184,24 @@ static void DotNodeCtor(Node *const node, FILE *dot_file)
             fprintf(dot_file , "\"coral\"];");
             break;
         }
-        case NodeType::NAME:
+        case NodeType::FUNC:
         {
             fprintf(dot_file , "\"bisque\"];");
+            break;
+        }
+        case NodeType::KWORD:
+        {
+            fprintf(dot_file, "\"crimson\"];");
+            break;
+        }
+        case NodeType::OP:
+        {
+            fprintf(dot_file, "\"deeppink3\"];");
+            break;
+        }
+        case NodeType::VAR:
+        {
+            fprintf(dot_file, "\"gold\"];");
             break;
         }
         case NodeType::SP_CH:
@@ -234,6 +290,111 @@ void TreeDump(Tree *tree, const char *func, const int line)
 
     num++;
 }
+
+//
+// static Node *ReadSubTree(char *buf, size_t *counter)
+// {
+//     static char *buffer = buf;
+//     static int offset   = 0;
+//     static char ch      = 0;
+//
+//     sscanf(buffer, " %c%n", &ch, &offset);
+//     buffer += offset;
+//
+//     switch(ch)
+//     {
+//         case '(':
+//         {
+//             char data[MAX_DATA_LEN] = {};
+//
+//             sscanf(buffer, " %c%n", &ch, &offset);
+//             buffer += offset;
+//
+//             if(ch != '<')
+//             {
+//                 LOG("Invalid data.\n");
+//                 return NULL;
+//             }
+//
+//             bool is_scaned = sscanf(buffer, " %[^>]%*c%n", data, &offset);
+//             buffer += offset;
+//
+//             if(!is_scaned)
+//             {
+//                 LOG("Invalid data.\n");
+//                 return NULL;
+//             }
+//
+//             Node *left  = ReadSubTree(buffer, counter);
+//             Node *right = ReadSubTree(buffer, counter);
+//
+//             sscanf(buffer, " %c%n", &ch, &offset);
+//             buffer += offset;
+//
+//             if(ch != ')')
+//             {
+//                 LOG("Invalid data.\n");
+//
+//                 NodeDtor(left );
+//                 NodeDtor(right);
+//
+//                 return NULL;
+//             }
+//
+//             (*counter)++;
+//
+//             return NodeCtor(data, left, right);
+//         }
+//         case '*':
+//         {
+//             return NULL;
+//         }
+//         default:
+//         {
+//             LOG("Invalid data.\n");
+//
+//             return NULL;
+//         }
+//     }
+// }
+//
+// static size_t FileSize(const char *file_name)
+// {
+//     struct stat file_info = {};
+//     stat(file_name, &file_info);
+//
+//     return (size_t)file_info.st_size;
+// }
+//
+// Tree ReadTree(const char *file_name)
+// {
+//     ASSERT(file_name, return {});
+//
+//     FILE *file = fopen(file_name, "rb");
+//     if(!file)
+//     {
+//         LOG("No such file: \"%s\"", file_name);
+//         return {};
+//     }
+//
+//     size_t buf_size = FileSize(file_name);
+//     char *buffer = (char *)calloc(buf_size + 1, sizeof(char));
+//     ASSERT(buffer, fclose(file); return {});
+//
+//     fread(buffer, buf_size, sizeof(char), file);
+//     fclose(file);
+//
+//     size_t counter = 0;
+//     Tree tree      = {};
+//
+//     tree.root = ReadSubTree(buffer, &counter);
+//     tree.size = counter;
+//
+//     free(buffer);
+//
+//     return tree;
+// }
+
 
 #ifdef PROTECT
 //TODO upgrade
