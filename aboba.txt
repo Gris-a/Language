@@ -1,18 +1,18 @@
-func factorial(a)
-{
-    if(a == 1)
-    {
-        return 1;
-    }
+func factorial}a{
+)
+    esli}a raVnoraVno 1{
+    )
+        VoZdat 1$
+    (
 
-    return a * factorial(a - 1);
-}
+    VoZdat a umnozhit factorial}a minus 1{$
+(
 
-func main()
-{
-    a = in();
+func main}{
+)
+    a raVno in}{$
 
-    b = factorial(a);
+    b raVno factorial}a{$
 
-    out(b);
-}
+    out}b{$
+(

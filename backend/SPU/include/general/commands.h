@@ -349,3 +349,15 @@ DEF_CMD(rst, 25, 0, {
 
         return EXIT_SUCCESS;
         })
+
+DEF_CMD(pow, 26, 0, {
+        data_t temp1 = 0;
+        DO_POP(&temp1);
+
+        data_t temp2 = 0;
+        DO_POP(&temp2);
+
+        DO_PUSH((data_t)pow(temp2, temp1));
+
+        return EXIT_SUCCESS;
+        })

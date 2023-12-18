@@ -1,27 +1,27 @@
-OPERATOR(ADD, "+")
+OPERATOR(ADD, "plus")
 
-OPERATOR(SUB, "-")
+OPERATOR(SUB, "minus")
 
-OPERATOR(MUL, "*")
+OPERATOR(MUL, "umnozhit")
 
-OPERATOR(DIV, "/")
+OPERATOR(DIV, "delit")
 
-OPERATOR(POW, "^")
+OPERATOR(POW, "VoZVesti")
 
-OPERATOR(LESS, "<")
+OPERATOR(LESS, "menshe")
 
-OPERATOR(ABOVE, ">")
+OPERATOR(ABOVE, "bolshe")
 
-OPERATOR(LESSEQ, "<=")
+OPERATOR(LESSEQ, "mensheraVno")
 
-OPERATOR(ABOVEEQ, ">=")
+OPERATOR(ABOVEEQ, "bolsheraVno")
 
-OPERATOR(EQ, "==")
+OPERATOR(EQ, "raVnoraVno")
 
-OPERATOR(NOTEQ, "!=")
+OPERATOR(NOTEQ, "neraVno")
 
-OPERATOR(ASS, "=")
+OPERATOR(ASS, "raVno")
 
-OPERATOR(AND, "&&")
+OPERATOR(AND, "i")
 
-OPERATOR(OR, "||")
+OPERATOR(OR, "ili")

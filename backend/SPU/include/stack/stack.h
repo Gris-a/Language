@@ -5,8 +5,8 @@
 
 #include "../general/log.h"
 
-typedef long long data_t;
-#define DATA_FORMAT "%lld"
+typedef double data_t;
+#define DATA_FORMAT "%lg"
 
 const size_t BASE_CAPACITY = 2;
 
