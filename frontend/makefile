@@ -1,0 +1,46 @@
+CFLAGS = -D _DEBUG -ggdb3 -std=c++20 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts -Wconditionally-supported -Wconversion -Wctor-dtor-privacy -Wempty-body -Wfloat-equal -Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline -Wlogical-op -Wnon-virtual-dtor -Wopenmp-simd -Woverloaded-virtual -Wpacked -Wpointer-arith -Winit-self -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wsuggest-attribute=noreturn -Wsuggest-final-methods -Wsuggest-final-types -Wsuggest-override -Wswitch-default -Wswitch-enum -Wsync-nand -Wundef -Wunreachable-code -Wunused -Wuseless-cast -Wvariadic-macros -Wno-literal-suffix -Wno-missing-field-initializers -Wno-narrowing -Wno-old-style-cast -Wno-varargs -Wstack-protector -fcheck-new -fsized-deallocation -fstack-protector -fstrict-overflow -flto-odr-type-merging -fno-omit-frame-pointer -Wlarger-than=8192 -Wstack-usage=8192 -pie -fPIE -Werror=vla -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
+
+OBJDIR = obj_frontend
+GENDIR = ../general
+
+objects = $(addprefix $(OBJDIR)/, main.o tokens.o text.o stack.o save_tree.o parser.o names_table.o tree_struct.o tree_data.o log.o)
+
+all: $(OBJDIR) front
+
+$(OBJDIR):
+	@mkdir $(OBJDIR)
+
+front: $(objects)
+	@g++ $(CFLAGS)  $^ -o $@
+
+$(OBJDIR)/main.o: main.cpp frontend.h parser/parser.h save_tree/save_tree.h $(GENDIR)/log/log.h $(wildcard $(GENDIR)/tree/include/*.h) stack/stack.h text/text.h tokens/tokens.h names_table/names_table.h $(wildcard $(GENDIR)/language/*.h)
+	@g++ $(CFLAGS)  -c $< -o $@
+
+
+$(OBJDIR)/tokens.o: tokens/tokens.cpp tokens/tokens.h $(GENDIR)/log/log.h $(wildcard $(GENDIR)/tree/include/*.h) $(wildcard $(GENDIR)/language/*.h)
+	@g++ $(CFLAGS)  -c $< -o $@
+
+$(OBJDIR)/text.o: text/text.cpp text/text.h $(GENDIR)/log/log.h
+	@g++ $(CFLAGS)  -c $< -o $@
+
+$(OBJDIR)/stack.o: stack/stack.cpp stack/stack.h $(GENDIR)/log/log.h
+	@g++ $(CFLAGS)  -c $< -o $@
+
+$(OBJDIR)/save_tree.o: save_tree/save_tree.cpp save_tree/save_tree.h $(GENDIR)/log/log.h $(wildcard $(GENDIR)/tree/include/*.h) $(wildcard $(GENDIR)/language/*.h)
+	@g++ $(CFLAGS)  -c $< -o $@
+
+$(OBJDIR)/parser.o: parser/parser.cpp parser/parser.h $(GENDIR)/log/log.h $(wildcard $(GENDIR)/tree/include/*.h) stack/stack.h text/text.h tokens/tokens.h names_table/names_table.h $(wildcard $(GENDIR)/language/*.h)
+	@g++ $(CFLAGS)  -c $< -o $@
+
+$(OBJDIR)/names_table.o: names_table/names_table.cpp names_table/names_table.h $(GENDIR)/log/log.h $(wildcard $(GENDIR)/language/*.h)
+	@g++ $(CFLAGS)  -c $< -o $@
+
+$(OBJDIR)/tree_struct.o: $(GENDIR)/tree/source/tree_struct.cpp $(GENDIR)/log/log.h $(wildcard $(GENDIR)/tree/include/*.h) $(wildcard $(GENDIR)/language/*.h)
+	@g++ $(CFLAGS)  -c $< -o $@
+
+$(OBJDIR)/tree_data.o: $(GENDIR)/tree/source/tree_data.cpp $(GENDIR)/log/log.h $(wildcard $(GENDIR)/tree/include/*.h) $(wildcard $(GENDIR)/language/*.h)
+	@g++ $(CFLAGS)  -c $< -o $@
+
+
+$(OBJDIR)/log.o: $(GENDIR)/log/log.cpp $(GENDIR)/log/log.h
+	@g++ $(CFLAGS)  -c $< -o $@
