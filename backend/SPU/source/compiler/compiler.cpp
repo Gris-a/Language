@@ -22,6 +22,8 @@ static int ArgsProcessing(FILE *source, Command *command, char *b_code, size_t *
         return EXIT_SUCCESS;
     }
 
+    long fpos = ftell(source);
+
     data_t arg_val = 0;
     if(fscanf(source, DATA_FORMAT, &arg_val))
     {
@@ -33,6 +35,7 @@ static int ArgsProcessing(FILE *source, Command *command, char *b_code, size_t *
         return EXIT_SUCCESS;
     }
 
+    fseek(source, fpos, SEEK_SET);
     char arg[MAX_LEN] = {};
     fscanf(source, "%s", arg);
 
@@ -72,9 +75,10 @@ static int ArgsProcessing(FILE *source, Command *command, char *b_code, size_t *
         command->arg_t = OFFSET;
 
         size_t offset  = ULLONG_MAX;
+
         for(size_t i = 0; i < MAX_LABELS; i++)
         {
-            if(!strcmp(labels[i].name, arg))
+            if(strcmp(labels[i].name, arg) == 0)
             {
                 offset = labels[i].pos;
 

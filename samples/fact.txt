@@ -1,6 +1,6 @@
 func factorial}a{
 )
-    esli}a raVnoraVno 1{
+    esli}}a raVnoraVno 1{ ili }a raVnoraVno 0{{
     )
         VoZdat 1$
     (
@@ -10,6 +10,14 @@ func factorial}a{
 
 func main}{
 )
-    b raVno factorial}in}{{$
+    b raVno in}{$
+    esli}b menshe 0{
+    )
+        b raVno minus 1$
+    (
+    inache
+    )
+        b raVno factorial}b{$
+    (
     out}b{$
 (

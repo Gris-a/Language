@@ -70,8 +70,10 @@ static Node *ParseBody      (Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseAssignment(Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseReturn    (Stack *nt_stack, Token **token, bool *is_syn_err);
 
-static Node *ParseExpressionSep(Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExpression   (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprOrSep    (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprOr       (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprAnd      (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprComp     (Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseExprAddSub   (Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseExprMulDiv   (Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseExprPow      (Stack *nt_stack, Token **token, bool *is_syn_err);
@@ -449,7 +451,7 @@ static Node *ParseIf(Stack *nt_stack, Token **token, bool *is_syn_err)
     SYN_ASSERT(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::BRACKET_LEFT));
     TOKEN_NEXT;
 
-    Node *_if_cond = ParseExpression(nt_stack, token, is_syn_err);
+    Node *_if_cond = ParseExprOr(nt_stack, token, is_syn_err);
     SYN_ASSERT(_if_cond);
 
     SYN_ASSERT(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::BRACKET_RIGHT));
@@ -493,7 +495,7 @@ static Node *ParseWhile(Stack *nt_stack, Token **token, bool *is_syn_err)
     SYN_ASSERT(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::BRACKET_LEFT));
     TOKEN_NEXT;
 
-    Node *_while_cond = ParseExpression(nt_stack, token, is_syn_err);
+    Node *_while_cond = ParseExprOr(nt_stack, token, is_syn_err);
     SYN_ASSERT(_while_cond);
 
     SYN_ASSERT(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::BRACKET_RIGHT));
@@ -531,7 +533,7 @@ static Node *ParseBody(Stack *nt_stack, Token **token, bool *is_syn_err)
         if(!*next) *next = ParseIf           (nt_stack, token, is_syn_err);
         if(!*next) *next = ParseReturn       (nt_stack, token, is_syn_err);
         if(!*next) *next = ParseAssignment   (nt_stack, token, is_syn_err);
-        if(!*next) *next = ParseExpressionSep(nt_stack, token, is_syn_err);
+        if(!*next) *next = ParseExprOrSep(nt_stack, token, is_syn_err);
         if(!*next) break;
 
         next = &(*next)->right;
@@ -556,7 +558,7 @@ static Node *ParseAssignment(Stack *nt_stack, Token **token, bool *is_syn_err)
     TOKEN_NEXT;
     TOKEN_NEXT;
 
-    Node *expr = ParseExpression(nt_stack, token, is_syn_err);
+    Node *expr = ParseExprOr(nt_stack, token, is_syn_err);
     SYN_ASSERT(expr);
 
     Node *sep = LEXEME;
@@ -591,7 +593,7 @@ static Node *ParseReturn(Stack *nt_stack, Token **token, bool *is_syn_err)
     if(!(IsKeyword(ret) && (GetKeyword(ret) == Keyword::RET))) return NULL;
     TOKEN_NEXT;
 
-    Node *expr = ParseExpression(nt_stack, token, is_syn_err);
+    Node *expr = ParseExprOr(nt_stack, token, is_syn_err);
     SYN_ASSERT(expr);
 
     Node *sep = LEXEME;
@@ -605,11 +607,11 @@ static Node *ParseReturn(Stack *nt_stack, Token **token, bool *is_syn_err)
 }
 
 
-static Node *ParseExpressionSep(Stack *nt_stack, Token **token, bool *is_syn_err)
+static Node *ParseExprOrSep(Stack *nt_stack, Token **token, bool *is_syn_err)
 {
     SYN_ASSERT(!*is_syn_err);
 
-    Node *expr = ParseExpression(nt_stack, token, is_syn_err);
+    Node *expr = ParseExprOr(nt_stack, token, is_syn_err);
     if(!expr) return NULL;
 
     Node *sep = LEXEME;
@@ -621,7 +623,61 @@ static Node *ParseExpressionSep(Stack *nt_stack, Token **token, bool *is_syn_err
     return sep;
 }
 
-static Node *ParseExpression(Stack *nt_stack, Token **token, bool *is_syn_err)
+static Node *ParseExprOr(Stack *nt_stack, Token **token, bool *is_syn_err)
+{
+    SYN_ASSERT(!*is_syn_err);
+
+    Node *expr = ParseExprAnd(nt_stack, token, is_syn_err);
+    if(!expr) return NULL;
+
+    Node *ret_val = expr;
+    Node *op    = LEXEME;
+
+    while(IsOperator(op) && (GetOperator(op) == Operator::OR))
+    {
+        TOKEN_NEXT;
+
+        expr = ParseExprAnd(nt_stack, token, is_syn_err);
+        SYN_ASSERT(expr);
+
+        op->left  = ret_val;
+        op->right = expr;
+        ret_val   = op;
+
+        op = LEXEME;
+    }
+
+    return ret_val;
+}
+
+static Node *ParseExprAnd(Stack *nt_stack, Token **token, bool *is_syn_err)
+{
+    SYN_ASSERT(!*is_syn_err);
+
+    Node *expr = ParseExprComp(nt_stack, token, is_syn_err);
+    if(!expr) return NULL;
+
+    Node *ret_val = expr;
+    Node *op    = LEXEME;
+
+    while(IsOperator(op) && (GetOperator(op) == Operator::AND))
+    {
+        TOKEN_NEXT;
+
+        expr = ParseExprComp(nt_stack, token, is_syn_err);
+        SYN_ASSERT(expr);
+
+        op->left  = ret_val;
+        op->right = expr;
+        ret_val   = op;
+
+        op = LEXEME;
+    }
+
+    return ret_val;
+}
+
+static Node *ParseExprComp(Stack *nt_stack, Token **token, bool *is_syn_err)
 {
     SYN_ASSERT(!*is_syn_err);
 
@@ -782,7 +838,7 @@ static Node *ParseExprBrackets(Stack *nt_stack, Token **token, bool *is_syn_err)
     if(!(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::BRACKET_LEFT))) return NULL;
     TOKEN_NEXT;
 
-    Node *ret_val = ParseExpression(nt_stack, token, is_syn_err);
+    Node *ret_val = ParseExprOr(nt_stack, token, is_syn_err);
     SYN_ASSERT(ret_val);
 
     SYN_ASSERT(IsSpecialChar(LEXEME) && (GetSpecialChar(LEXEME) == SpecialChar::BRACKET_RIGHT));
@@ -816,7 +872,7 @@ static Node *ParseExprFuncCallArgs(Stack *nt_stack, Name *func, Token **token, b
         *next = LEXEME;
         TOKEN_NEXT;
 
-        Node *arg = ParseExpression(nt_stack, token, is_syn_err);
+        Node *arg = ParseExprOr(nt_stack, token, is_syn_err);
         SYN_ASSERT(arg);
 
         (*next)->left    = arg;

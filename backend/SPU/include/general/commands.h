@@ -12,15 +12,15 @@
 #define SET_RET                         PushStack(&SPU->CALLS_stack, *(data_t *)pos)
 #define GET_RET(arg)                    if(PopStack(&SPU->CALLS_stack,  (data_t *)arg)) return EXIT_FAILURE
 
-#define MEM_SET(arg, offset)            if((offset + 1) * sizeof(arg) > RAM_SIZE) {LOG("Segmentation fault.\n"); return EXIT_FAILURE;}\
+#define MEM_SET(arg, offset)            if((offset + 1) * sizeof(arg) >= RAM_SIZE) {printf("Segmentation fault.\n"); return EXIT_FAILURE;}\
                                         memcpy(RAM + offset * sizeof(arg), &arg, sizeof(arg))
 
-#define MEM_GET(arg, offset)            if((offset + 1) * sizeof(arg) > RAM_SIZE) {LOG("Segmentation fault.\n"); return EXIT_FAILURE;}\
+#define MEM_GET(arg, offset)            if((offset + 1) * sizeof(arg) >= RAM_SIZE) {printf("Segmentation fault.\n"); return EXIT_FAILURE;}\
                                         memcpy(&arg, RAM + offset * sizeof(arg), sizeof(arg))
 
 #define GET_VAL(val)                    GetVal(&val, instructions, pos, sizeof(val))
 
-#define SET_POS(val)                    if((*pos = val) > ULLONG_MAX) {LOG("Segmentation fault.\n"); return EXIT_FAILURE;}
+#define SET_POS(val)                    if((*pos = val) >= DOMAIN) {printf("Segmentation fault.\n"); return EXIT_FAILURE;}
 
 #define REG_ID_CHECK(reg_id)            (0 <= reg_id && reg_id < REG_COUNT)
 

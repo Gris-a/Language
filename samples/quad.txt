@@ -71,7 +71,7 @@ func main}{
                     inache
                     )
                         out}2{$
-                        delta raVno d delit }2 umnozhit a{$
+                        delta raVno d VoZVesti 0.5 delit }2 umnozhit a{$
                         out}x0 minus delta{$
                         out}x0 plus delta{$
                     (

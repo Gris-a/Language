@@ -133,40 +133,44 @@ static void TranslateAnd(Node *_and, FILE *asm_file, Function *func_info)
 {
     fprintf(asm_file, "\n;and_statement\n\n");
 
+    int label = LABEL_N++;
+
     TranslateExpression(_and->left , asm_file, func_info);
     fprintf(asm_file, "push 0\n"
-                      "je FALSE%d\n\n", LABEL_N);
+                      "je FALSE%d\n\n", label);
 
     TranslateExpression(_and->right, asm_file, func_info);
     fprintf(asm_file, "\npush 0\n"
-                      "je FALSE%d\n\n", LABEL_N);
+                      "je FALSE%d\n\n", label);
 
+    LABEL_N++;
     fprintf(asm_file, "push 1\n"
                       "jmp AND_END%d\n\n"
                       "FALSE%d:\n"
                       "push 0\n\n"
-                      "AND_END%d:\n\n", LABEL_N + 1, LABEL_N, LABEL_N + 1);
-    LABEL_N += 2;
+                      "AND_END%d:\n\n", LABEL_N, label, LABEL_N);
 }
 
 static void TranslateOr(Node *_or, FILE *asm_file, Function *func_info)
 {
     fprintf(asm_file, "\n;or_statement\n\n");
 
+    int label = LABEL_N++;
+
     TranslateExpression(_or->left , asm_file, func_info);
     fprintf(asm_file, "push 0\n"
-                      "jne TRUE%d\n\n", LABEL_N);
+                      "jne TRUE%d\n\n", label);
 
     TranslateExpression(_or->right, asm_file, func_info);
     fprintf(asm_file, "\npush 0\n"
-                      "jne TRUE%d\n\n", LABEL_N);
+                      "jne TRUE%d\n\n", label);
 
+    LABEL_N++;
     fprintf(asm_file, "push 0\n"
                       "jmp OR_END%d\n\n"
                       "TRUE%d:\n"
                       "push 1\n\n"
-                      "OR_END%d:\n\n", LABEL_N + 1, LABEL_N, LABEL_N + 1);
-    LABEL_N += 2;
+                      "OR_END%d:\n\n", LABEL_N, label, LABEL_N);
 }
 
 #define BUILTIN_FUNC(func_name, n_args) if(strcmp(func_name, GetFunction(func)) == 0) {fprintf(asm_file, func_name"\n"); return;} else
@@ -443,10 +447,11 @@ static void SearchVar(Node *node, Function *func_info)
 
 static Function GetFunctionInfo(Node *func)
 {
+    const size_t INIT_SIZE = 256;
     Function func_info = {.func_name = GetFunction(func),
                           .n_vars    = 0,
-                          .var_size  = 256,
-                          .variables = (int *)calloc(256, sizeof(int))};
+                          .var_size  = INIT_SIZE,
+                          .variables = (int *)calloc(INIT_SIZE, sizeof(int))};
     SearchVar(func, &func_info);
 
     for(size_t i = 0; i < func_info.var_size; i++)
