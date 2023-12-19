@@ -82,6 +82,13 @@ Token *AddToken(Tokens *tokens, node_t data, NodeType type, size_t line, size_t 
 Token *InsertToken(Token *prev_p, node_t data, NodeType type, size_t line, size_t l_pos)
 {
     Token *token  = (Token *)calloc(1, sizeof(Token));
+    if(!token)
+    {
+        LOG("Error: Unable to allocate memory at %s:%s:%d\n", __FILE__, __PRETTY_FUNCTION__, __LINE__ - 3);
+
+        return NULL;
+    }
+
     *token = {.lexeme = NodeCtor(data, type),
               .line   = line,
               .pos    = l_pos};

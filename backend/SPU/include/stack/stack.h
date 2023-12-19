@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "../general/log.h"
+#include "../../../../general/log/log.h"
 
 typedef double data_t;
 #define DATA_FORMAT "%lg"

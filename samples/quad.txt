@@ -1,0 +1,82 @@
+
+
+
+
+func main}{
+)
+    a raVno in}{$
+    b raVno in}{$
+    c raVno in}{$
+
+
+    esli}a raVnoraVno 0{
+    )
+        esli}b neraVno 0{
+        )
+            out}1{$
+            out}minus c delit b{$
+        (
+        inache
+        )
+            esli}c raVnoraVno 0{
+            )
+                out}3{$
+            (
+            inache
+            )
+                out}0{$
+            (
+        (
+    (
+    inache
+    )
+        esli}b raVnoraVno 0{
+        )
+            esli}a umnozhit c bolshe 0{
+            )
+                out}0{$
+            (
+            inache
+            )
+                out}2{$
+                x raVno }minus c delit a{ VoZVesti 0.5$
+                out}x{$
+                out}minus x{$
+            (
+        (
+        inache
+        )
+            esli}c raVnoraVno 0{
+            )
+                out}2{$
+                x raVno minus b delit a$
+                out}0{$
+                out}x{$
+            (
+            inache
+            )
+                d raVno }b umnozhit b minus 4 umnozhit a umnozhit c{$
+                esli}d menshe 0{
+                )
+                    out}0{$
+                (
+                inache
+                )
+                    x0 raVno minus b delit }2 umnozhit a{$
+                    esli}d raVnoraVno 0{
+                    )
+                        out}1{$
+                        out}x0{$
+                    (
+                    inache
+                    )
+                        out}2{$
+                        delta raVno d delit }2 umnozhit a{$
+                        out}x0 minus delta{$
+                        out}x0 plus delta{$
+                    (
+                (
+            (
+        (
+    (
+(

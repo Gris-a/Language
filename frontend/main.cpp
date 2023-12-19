@@ -4,22 +4,19 @@
 
 int main(int argc, const char *argv[])
 {
-    if(argc != 2)
+    if(argc != 3)
     {
-        printf("Error: You only need to enter file\n");
-
+        printf("Error: You need to enter in-out files\n");
         return EXIT_FAILURE;
     }
 
     Tree tree = ParseCode(argv[1]);
     if(!tree.root) return EXIT_FAILURE;
 
-    FILE *out = fopen("code.tree", "w");
-    SaveTree(&tree, out);
-    fclose(out);
+    TreeDot(&tree, "code_tree.png");
+    SaveTree(&tree, argv[2]);
 
     TreeDtor(&tree);
-    void ClearTables(void);
 
     return EXIT_SUCCESS;
 }

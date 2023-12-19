@@ -218,6 +218,13 @@ Tree ReadTree(const char *file_name)
     return tree;
 }
 
+Node *SubTreeCopy(Node *node)
+{
+    if(!node) return NULL;
+    return NodeCtor(node->data, node->type, SubTreeCopy(node->left),
+                                            SubTreeCopy(node->right));
+}
+
 
 void SubTreeDtor(Node *sub_tree)
 {
@@ -293,7 +300,7 @@ int NodeDtor(Node *node)
 
 #define SPECIAL_CH(enum, ch) case SpecialChar::enum: {fprintf(file, "\\%c", ch); break;}
 #define KEYWORD(enum, kword) case Keyword::enum: {fprintf(file, "%s", kword); break;}
-#define OPERATOR(enum, op) case Operator::enum: {fprintf(file, "\\%s", op); break;}
+#define OPERATOR(enum, op, ...) case Operator::enum: {fprintf(file, "\\%s", op); break;}
 static void NodeDataPrint(Node *node, FILE *file)
 {
     switch(node->type)

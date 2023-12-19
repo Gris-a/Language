@@ -5,14 +5,11 @@ func factorial}a{
         VoZdat 1$
     (
 
-    VoZdat a umnozhit factorial}a minus 1{$
+    VoZdat factorial}a minus 1{ umnozhit a$
 (
 
 func main}{
 )
-    a raVno in}{$
-
-    b raVno factorial}a{$
-
+    b raVno factorial}in}{{$
     out}b{$
 (

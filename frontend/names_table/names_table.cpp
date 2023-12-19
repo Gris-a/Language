@@ -53,7 +53,7 @@ Name *AddName(NamesTable *table, const char *ident, NameType type, name_t name_d
 }
 
 #define KEYWORD(enum, keyword)  AddName(table, keyword, NameType::KWORD, {.kword = Keyword::enum});
-#define OPERATOR(enum, keyword) AddName(table, keyword, NameType::OP   , {.op    = Operator::enum});
+#define OPERATOR(enum, keyword, ...) AddName(table, keyword, NameType::OP   , {.op    = Operator::enum});
 NamesTable *NamesTableCtorLang(void)
 {
     NamesTable *table = NamesTableCtor();

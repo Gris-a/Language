@@ -46,6 +46,8 @@ struct Tree
 
 Tree ReadTree(const char *file_name);
 
+Node *SubTreeCopy(Node *node);
+
 
 void SubTreeDtor(Node *sub_tree);
 

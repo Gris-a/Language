@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "tree.h"
+#include "tree_struct.h"
 
 bool IsNumber(Node *node);
 

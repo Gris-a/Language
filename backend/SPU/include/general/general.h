@@ -1,7 +1,7 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
-#include "log.h"
+#include "../../../../general/log/log.h"
 #include "../stack/stack.h"
 
 const char KEYWORD[]   = "RAVE";
