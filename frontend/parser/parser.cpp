@@ -529,11 +529,11 @@ static Node *ParseBody(Stack *nt_stack, Token **token, bool *is_syn_err)
 
     while(true)
     {
-                   *next = ParseWhile        (nt_stack, token, is_syn_err);
-        if(!*next) *next = ParseIf           (nt_stack, token, is_syn_err);
-        if(!*next) *next = ParseReturn       (nt_stack, token, is_syn_err);
-        if(!*next) *next = ParseAssignment   (nt_stack, token, is_syn_err);
-        if(!*next) *next = ParseExprOrSep(nt_stack, token, is_syn_err);
+                   *next = ParseWhile     (nt_stack, token, is_syn_err);
+        if(!*next) *next = ParseIf        (nt_stack, token, is_syn_err);
+        if(!*next) *next = ParseReturn    (nt_stack, token, is_syn_err);
+        if(!*next) *next = ParseAssignment(nt_stack, token, is_syn_err);
+        if(!*next) *next = ParseExprOrSep (nt_stack, token, is_syn_err);
         if(!*next) break;
 
         next = &(*next)->right;
