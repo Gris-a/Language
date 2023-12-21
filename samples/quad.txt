@@ -1,14 +1,8 @@
-
-
-
-
 func main}{
 )
     a raVno in}{$
     b raVno in}{$
     c raVno in}{$
-
-
     esli}a raVnoraVno 0{
     )
         esli}b neraVno 0{

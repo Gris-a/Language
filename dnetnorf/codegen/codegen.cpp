@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "codegen.h"
 
@@ -23,9 +24,7 @@ static void CodeGenExpression(Node *expr, FILE *code)
     if(IsNumber(expr))
     {
         if(GetNumber(expr) < 0)
-        {
             fprintf(code, "minus %lg", -GetNumber(expr));
-        }
         else
             fprintf(code, "%lg", GetNumber(expr));
     }
@@ -39,7 +38,8 @@ static void CodeGenExpression(Node *expr, FILE *code)
     else if(IsOperator(expr))
     {
         fputc('}', code);
-        CodeGenExpression(expr->left, code);
+        if(!(((GetOperator(expr) == Operator::ADD) || (GetOperator(expr) == Operator::SUB)) && IsNumber(expr->left) && (abs(GetNumber(expr->left)) < M_ERR)))
+            CodeGenExpression(expr->left, code);
         switch(GetOperator(expr))
         {
             #include "../../general/language/operators.h"

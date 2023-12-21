@@ -13,7 +13,7 @@ int main(int argc, const char *argv[])
     Tree tree = ParseCode(argv[1]);
     if(!tree.root) return EXIT_FAILURE;
 
-    TreeDot(&tree, "code_tree.png");
+    TreeDot(&tree, "tree.png");
     SaveTree(&tree, argv[2]);
 
     TreeDtor(&tree);

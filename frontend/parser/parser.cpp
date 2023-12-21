@@ -50,7 +50,9 @@ static void SyntaxErrMessage(Text *code, size_t line, size_t l_pos);
 
 static bool IsSpecialCharacter(char ch);
 
-static bool   SkipSpaces(const char *str, size_t *pos);
+static bool SkipSpaces            (const char *str, size_t *pos);
+static bool SkipUnwantedCharacters(const char *str, size_t *pos);
+
 static double ScanDouble(const char *str, size_t *pos);
 static int    ScanWord  (const char *str, size_t *pos, char buffer[]);
 
@@ -70,17 +72,17 @@ static Node *ParseBody      (Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseAssignment(Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseReturn    (Stack *nt_stack, Token **token, bool *is_syn_err);
 
-static Node *ParseExprOrSep    (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprOr       (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprAnd      (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprComp     (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprAddSub   (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprMulDiv   (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprPow      (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprPrimary  (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprBrackets (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprVariable (Stack *nt_stack, Token **token, bool *is_syn_err);
-static Node *ParseExprFuncCall (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprOrSep   (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprOr      (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprAnd     (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprComp    (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprAddSub  (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprMulDiv  (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprPow     (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprPrimary (Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprBrackets(Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprVariable(Stack *nt_stack, Token **token, bool *is_syn_err);
+static Node *ParseExprFuncCall(Stack *nt_stack, Token **token, bool *is_syn_err);
 static Node *ParseExprFuncCallArgs(Stack *nt_stack, Name *func, Token **token, bool *is_syn_err, size_t *n_args);
 
 
@@ -138,6 +140,39 @@ static bool SkipSpaces(const char *str, size_t *pos)
     return (str[*pos] == '\0');
 }
 
+static bool SkipUnwantedCharacters(const char *str, size_t *pos)
+{
+    static bool is_comment = false;
+    bool is_end = false;
+
+    while(!(is_end = (str[*pos] == '\0')))
+    {
+        is_end = SkipSpaces(str, pos);
+        if(is_end) break;
+
+        if(is_comment || (str[*pos] == '@'))
+        {
+            if(!is_comment)
+            {
+                (*pos)++;
+                is_comment = true;
+            }
+
+            while(str[*pos] != '\0')
+            {
+                if(str[(*pos)++] == '@')
+                {
+                    is_comment = false;
+                    break;
+                }
+            }
+        }
+        else break;
+    }
+
+    return is_end;
+}
+
 
 static int ScanWord(const char *str, size_t *pos, char buffer[])
 {
@@ -183,7 +218,7 @@ static Tokens Tokenizator(Text *code)
 
         while(CHAR != '\0')
         {
-            bool is_end = SkipSpaces(LINE, &pos);
+            bool is_end = SkipUnwantedCharacters(LINE, &pos);
             if(is_end) break;
 
             size_t old_pos = pos;

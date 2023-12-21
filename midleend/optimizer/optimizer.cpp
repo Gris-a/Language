@@ -82,7 +82,7 @@ void Optimizer(const char *in, const char *out)
         if(!changes) break;
     }
 
-    TREE_DUMP(&tree);
+    TreeDot(&tree, "tree_opt.png");
 
     SaveTree(&tree, out);
     TreeDtor(&tree);
