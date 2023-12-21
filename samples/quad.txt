@@ -8,7 +8,14 @@ func main}{
         esli}b neraVno 0{
         )
             out}1{$
-            out}minus c delit b{$
+            esli}c raVnoraVno 0{
+            )
+                out}0{$
+            (
+            inache
+            )
+                out}minus c delit b{$
+            (
         (
         inache
         )
@@ -26,16 +33,25 @@ func main}{
     )
         esli}b raVnoraVno 0{
         )
-            esli}a umnozhit c bolshe 0{
+            esli}c raVnoraVno 0{
             )
+                out}1{$
                 out}0{$
             (
             inache
             )
-                out}2{$
-                x raVno }minus c delit a{ VoZVesti 0.5$
-                out}x{$
-                out}minus x{$
+                x raVno }minus c delit a{$
+                esli}x menshe 0{
+                )
+                    out}0{$
+                (
+                inache
+                )
+                    x raVno x VoZVesti 0.5$
+                    out}2{$
+                    out}x{$
+                    out}minus x{$
+                (
             (
         (
         inache

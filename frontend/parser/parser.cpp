@@ -456,11 +456,14 @@ static Node *ParseElse(Stack *nt_stack, Token **token, bool *is_syn_err)
         NamesTable *_else_table = NamesTableCtor();
         AddTable(_else_table);
 
+        const size_t VAR_ID_PREV = VARIABLE_ID;
+
         PushStack(nt_stack, _else_table);
         _else->left = ParseBody(nt_stack, token, is_syn_err);
         SYN_ASSERT(_else->left);
         PopStack(nt_stack);
 
+        VARIABLE_ID = VAR_ID_PREV;
     }
     else _else = NULL;
 
@@ -495,10 +498,14 @@ static Node *ParseIf(Stack *nt_stack, Token **token, bool *is_syn_err)
     NamesTable *_if_table = NamesTableCtor();
     AddTable(_if_table);
 
+    const size_t VAR_ID_PREV = VARIABLE_ID;
+
     PushStack(nt_stack, _if_table);
     Node *_if_body = ParseBody(nt_stack, token, is_syn_err);
     SYN_ASSERT(_if_body);
     PopStack(nt_stack);
+
+    VARIABLE_ID = VAR_ID_PREV;
 
     Node *_else = ParseElse(nt_stack, token, is_syn_err);
     SYN_ASSERT(!(*is_syn_err));
@@ -539,10 +546,14 @@ static Node *ParseWhile(Stack *nt_stack, Token **token, bool *is_syn_err)
     NamesTable *_while_table = NamesTableCtor();
     AddTable(_while_table);
 
+    const size_t VAR_ID_PREV = VARIABLE_ID;
+
     PushStack(nt_stack, _while_table);
     Node *_while_body = ParseBody(nt_stack, token, is_syn_err);
     SYN_ASSERT(_while_body);
     PopStack(nt_stack);
+
+    VARIABLE_ID = VAR_ID_PREV;
 
     ret_val->left       = _while;
     _while->left->left  = _while_body;
